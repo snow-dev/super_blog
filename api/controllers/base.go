@@ -30,7 +30,7 @@ func (server *Server) Initialize(driver, user, password, port, host, dbname stri
 		}
 	}
 
-	// datase migration
+	// database migration
 	server.DB.Debug().AutoMigrate(
 		&models.User{},
 		&models.Post{},

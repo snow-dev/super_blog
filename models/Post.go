@@ -29,29 +29,53 @@ func (p *Post) Prepare() {
 
 func (p *Post) Validate() error {
 	if p.Title == "" {
-		return errors.New("Required Title")
+		return errors.New("required Title")
 	}
 	if p.Content == "" {
-		return errors.New("Required Content")
+		return errors.New("required Content")
 	}
 	if p.AuthorID < 1 {
-		return errors.New("Required Author")
+		return errors.New("required Author")
 	}
 	return nil
 }
 
-func (post *Post) SavePost(db *gorm.DB) (*Post, error) {
+func (p *Post) SavePost(db *gorm.DB) (*Post, error) {
 	var err error
-	err = db.Debug().Create(&post).Error
+	err = db.Debug().Model(&Post{}).Create(&p).Error
 	if err != nil {
 		return &Post{}, err
 	}
 
-	if post.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", post.AuthorID).Take(&post.Author).Error
+	if p.ID != 0 {
+		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
 		if err != nil {
 			return &Post{}, err
 		}
 	}
-	return post, nil
+	return p, nil
+}
+
+func (p *Post) FindAllPosts(db *gorm.DB) (*[]Post, error) {
+	var err error
+	posts := []Post{}
+	err = db.Debug().Model(&User{}).Limit(100).Find(&posts).Error
+	if err != nil {
+		return &[]Post{}, err
+	}
+
+	if len(posts) > 0 {
+		for i, _ := range posts {
+			err := db.Debug().Model(&User{}).Where("id = ?", posts[i].AuthorID).Take(&posts[i].Author).Error
+			if err != nil {
+				return &[]Post{}, err
+			}
+		}
+
+		for j, _ := range posts {
+			posts[j].Author.Password = ""
+		}
+	}
+
+	return &posts, nil
 }

@@ -11,4 +11,10 @@ func (server *Server) initializeRoutes() {
 
 	// Users routes
 	server.Router.HandleFunc("/users", middlewares.SetMiddlewareJSON(server.CreateUser)).Methods("POST")
+	server.Router.HandleFunc("/users", middlewares.SetMiddlewareJSON(server.GetUsers)).Methods("GET")
+	server.Router.HandleFunc("/user", middlewares.SetMiddlewareJSON(server.UsersByID)).Methods("GET")
+
+	// Posts routes
+	server.Router.HandleFunc("/posts", middlewares.SetMiddlewareJSON(server.CreatePost)).Methods("POST")
+	server.Router.HandleFunc("/posts", middlewares.SetMiddlewareJSON(server.GetPosts)).Methods("GET")
 }
