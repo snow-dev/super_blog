@@ -1,0 +1,53 @@
+version: '3.6'
+
+services:
+  app:
+    image: super_blog:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/home/titor/Documents/go/src/github.com/snow-dev/super_blog
+      - api:/usr/src/app/
+    restart: on-failure
+    depends_on:
+      - db-postgres
+    networks:
+      - superblog
+
+  db-postgres:
+    image: postgres:latest
+    container_name: full_db_postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '9000:9000'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - superblog
+
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgadmin_container
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+#    depends_on:
+#      - db-postgres
+#    ports:
+#      - "5050:5050"
+#    networks:
+#      - superblog
+#    restart: unless-stopped
+
+volumes:
+  api:
+  database_postgres:                  # Uncomment this when using postgres.
+
+# Networks to be created to facilitate communication between containers
+networks:
+  superblog:
+    driver: bridge
