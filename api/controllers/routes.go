@@ -17,4 +17,5 @@ func (server *Server) initializeRoutes() {
 	// Posts routes
 	server.Router.HandleFunc("/posts", middlewares.SetMiddlewareJSON(server.CreatePost)).Methods("POST")
 	server.Router.HandleFunc("/posts", middlewares.SetMiddlewareJSON(server.GetPosts)).Methods("GET")
+	server.Router.HandleFunc("/posts/{id}", middlewares.SetMiddlewareJSON(server.PostById)).Methods("GET")
 }
